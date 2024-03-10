@@ -176,7 +176,8 @@ class HomeRepository {
         }),
       );
       print("Dart api finish");
-      return res.body;
+      final Map<String, dynamic> data = json.decode(res.body);
+    return data['conclusion'];
     } catch (e) {
       print("Error in the timestamp services catch block");
       print(e.toString());

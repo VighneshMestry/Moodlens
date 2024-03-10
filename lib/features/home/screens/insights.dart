@@ -23,13 +23,21 @@ class _InsightsScreenState extends State<InsightsScreen> {
   int _currentpage = 0;
   String conclusion = "";
 
-  void generateConclusion() async {
+  Future<String> generateConclusion() async {
     HomeRepository homeRepository = HomeRepository();
     SharedPreferences refs = await SharedPreferences.getInstance();
     int? studentId = refs.getInt("student_id");
-    conclusion = await homeRepository.generateConclusion(
+    return await homeRepository.generateConclusion(
         context, widget.meetingId, studentId!);
-    setState(() {});
+  }
+
+  late Future<String> _conclusionFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Assuming you have a function that fetches the conclusion asynchronously
+    _conclusionFuture = generateConclusion();
   }
 
   @override
@@ -124,29 +132,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.white,
           onPressed: () {
-            showDialog(
-              barrierDismissible: true,
-              context: context,
-              builder: (context) {
-                return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          topRight: Radius.circular(40),
-                        ),
-                      ),
-                      height: 200,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(conclusion),
-                      )),
-                );
-              },
-            );
+            // generateConclusion();
+            // (conclusion.length == 0) ? SizedBox() :
+            // setState(() {});
+            _showConclusionDialog(context);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
@@ -159,4 +148,114 @@ class _InsightsScreenState extends State<InsightsScreen> {
       ),
     );
   }
+
+  void _showConclusionDialog(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      transitionDuration: const Duration(milliseconds: 700),
+      transitionBuilder: (context, anim1, anim2, child) {
+        return SlideTransition(
+          position:
+              Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim1),
+          child: child,
+        );
+      },
+      pageBuilder: (context, anim1, anim2) {
+        return FutureBuilder<String>(
+          future: _conclusionFuture,
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 500,
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(bottom: 0, left: 12, right: 12),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    ),
+                  ),
+                  child: SizedBox.expand(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          snapshot.data!,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.normal,
+                              decoration: TextDecoration.none),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return AlertDialog(
+                title: Text('No Conclusion'),
+                content: Text('No conclusion available.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                  ),
+                ],
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+
+  // Future<String> fetchConclusion() async {
+  //   // Simulate fetching conclusion from a future function
+  //   await Future.delayed(Duration(seconds: 2));
+  //   return "Based on the emotional report, it appears that your child experienced a range of emotions during the meeting. While there were positive emotions of happiness, the presence of confusion suggests that they may have faced some challenges in understanding the content or keeping up with the pace of the discussion.\n\nGiven your child's disability, it's important to consider whether these challenges could be related to their specific needs. If other students in the class also reported similar emotions, this may indicate a need for the teacher to adjust their teaching style or provide additional support to all students.\n\nIf your child's emotions were more negative than those of their classmates, it may be helpful to discuss with them specifically what they found challenging. Encouraging them to communicate their difficulties and providing positive reinforcement for their efforts can help them develop coping mechanisms and improve their engagement in future meetings.";
+  // }
 }
+
+// showGeneralDialog(
+//           barrierLabel: "Label",
+//           barrierDismissible: true,
+//           barrierColor: Colors.black.withOpacity(0.5),
+//           transitionDuration: Duration(milliseconds: 700),
+//           context: context,
+//           pageBuilder: (context, anim1, anim2) {
+//             return Align(
+//               alignment: Alignment.bottomCenter,
+//               child: Container(
+//                 height: 500,
+//                 margin:
+//                     const EdgeInsets.only(bottom: 0, left: 12, right: 12),
+//                 decoration: const BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.only(
+//                     topLeft: Radius.circular(40),
+//                     topRight: Radius.circular(40),
+//                   ),
+//                 ),
+//                 child: SizedBox.expand(
+//                   child: Text(conclusion),
+//                 ),
+//               ),
+//             );
+//           },
+//           transitionBuilder: (context, anim1, anim2, child) {
+//             return SlideTransition(
+//               position: Tween(begin: Offset(0, 1), end: Offset(0, 0))
+//                   .animate(anim1),
+//               child: child,
+//             );
+//           },
+//         );
