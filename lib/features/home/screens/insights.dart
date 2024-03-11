@@ -126,7 +126,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
       floatingActionButton: Container(
         padding: const EdgeInsets.all(5.0),
         height: 70,
-        width: 70,
+        width: 150,
         child: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -139,9 +139,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: Image.asset(
-              "assets/moodlensLogo1.png",
-              fit: BoxFit.cover,
+            child: const Text(
+              "Mood Summary", style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
         ),
@@ -173,7 +174,6 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   height: 500,
-                  padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.only(bottom: 0, left: 12, right: 12),
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -185,13 +185,17 @@ class _InsightsScreenState extends State<InsightsScreen> {
                   child: SizedBox.expand(
                     child: Center(
                       child: SingleChildScrollView(
-                        child: Text(
-                          snapshot.data!,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                              decoration: TextDecoration.none),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            snapshot.data!,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.none),
+                            textAlign: TextAlign.justify,
+                          ),
                         ),
                       ),
                     ),
@@ -217,45 +221,4 @@ class _InsightsScreenState extends State<InsightsScreen> {
       },
     );
   }
-
-  // Future<String> fetchConclusion() async {
-  //   // Simulate fetching conclusion from a future function
-  //   await Future.delayed(Duration(seconds: 2));
-  //   return "Based on the emotional report, it appears that your child experienced a range of emotions during the meeting. While there were positive emotions of happiness, the presence of confusion suggests that they may have faced some challenges in understanding the content or keeping up with the pace of the discussion.\n\nGiven your child's disability, it's important to consider whether these challenges could be related to their specific needs. If other students in the class also reported similar emotions, this may indicate a need for the teacher to adjust their teaching style or provide additional support to all students.\n\nIf your child's emotions were more negative than those of their classmates, it may be helpful to discuss with them specifically what they found challenging. Encouraging them to communicate their difficulties and providing positive reinforcement for their efforts can help them develop coping mechanisms and improve their engagement in future meetings.";
-  // }
 }
-
-// showGeneralDialog(
-//           barrierLabel: "Label",
-//           barrierDismissible: true,
-//           barrierColor: Colors.black.withOpacity(0.5),
-//           transitionDuration: Duration(milliseconds: 700),
-//           context: context,
-//           pageBuilder: (context, anim1, anim2) {
-//             return Align(
-//               alignment: Alignment.bottomCenter,
-//               child: Container(
-//                 height: 500,
-//                 margin:
-//                     const EdgeInsets.only(bottom: 0, left: 12, right: 12),
-//                 decoration: const BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.only(
-//                     topLeft: Radius.circular(40),
-//                     topRight: Radius.circular(40),
-//                   ),
-//                 ),
-//                 child: SizedBox.expand(
-//                   child: Text(conclusion),
-//                 ),
-//               ),
-//             );
-//           },
-//           transitionBuilder: (context, anim1, anim2, child) {
-//             return SlideTransition(
-//               position: Tween(begin: Offset(0, 1), end: Offset(0, 0))
-//                   .animate(anim1),
-//               child: child,
-//             );
-//           },
-//         );
