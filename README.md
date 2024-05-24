@@ -1,4 +1,4 @@
-# loc_hackathon
+# Moodlens
 
 A new Flutter project.
 
